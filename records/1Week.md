@@ -14,6 +14,8 @@
 - [x] 구글 로그인
   - [x] OAuth2로 구현
   - [x] .gitignore에 클라이언트 정보 추가
+- [x] 네이버 로그인
+  - [x] OAuth2로 구현
 
 ### 1주차 미션 요약
 
@@ -126,4 +128,25 @@ client-name: Google
 
     - Refactoring 시 주로 다루어야 할 이슈들에 대해 리스팅합니다.
     - 1차 리팩토링은 기능 개발을 종료한 후, 스스로 코드를 다시 천천히 읽어보면서 진행합니다.
-    - 2차 리팩토링은 피어리뷰를 통해 전달받은 다양한 의견과 피드백을 조율하여 진행합니다.
+      - 네이버 로그인의 경우
+      ```yaml
+        # application.yml
+        naver:
+          authorization-uri: https://nid.naver.com/oauth2.0/authorize
+          token-uri: https://nid.naver.com/oauth2.0/token
+          user-info-uri: https://openapi.naver.com/v1/nid/me
+          user-name-attribute: response
+      ```
+      OAuth2가 Kakao같이 Naver의 경우 못 알아보기 때문에 provider을 추가해 주어야 한다  
+      (Google, Facebook의 경우 적지 않아도 된다)
+      ```yaml
+        # application-oauth.yml
+        naver:
+          clientId:
+          client-secret:
+          scope:
+          client-name: Naver
+          authorization-grant-type: authorization_code
+          redirect-uri: http://localhost:8080/login/oauth2/code/naver
+      ```
+      - 2차 리팩토링은 피어리뷰를 통해 전달받은 다양한 의견과 피드백을 조율하여 진행합니다.
