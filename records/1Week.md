@@ -64,6 +64,7 @@ likeablePerson.getFromInstaMember()과 rq.getMember().getInstaMember()를 비교
 두 값이 다르면 소유자가 아니므로 에러메시지를 쓰고 리턴시킨다
 
 - 없는 데이터 체크
+
 findById를 만들어 줄 때 값이 없으면 orElse(null)로 null 값을 반환해주었으니
 ```java
 // 없는 데이터라면
@@ -88,6 +89,15 @@ public RsData<LikeablePerson> delete(LikeablePerson likeablePerson) {
 ```
 @Transactional은 delete가 select SQL이 아니기 때문에 꼭 붙여주어야 한다
 Repository에 삭제요청을 하고 성공 메시지를 반환해준다
+
+- 테스트 코드 보충
+
+/likePerson/delete/1에 접근하는 코드였지 삭제를 확인하는 코드가 아니었으므로
+```java
+LikeablePerson likeablePerson = likeablePersonService.findById(1L);
+assertThat(likeablePerson).isEqualTo(null);
+```
+이 코드를 추가해 삭제가 잘 되었는지 테스트한다
 
 **[특이사항]**
 
