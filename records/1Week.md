@@ -48,12 +48,46 @@ resultActions
 
 - 소유자 체크
 ```java
-// LikeablePersonService.java에 findById를 만들어  
+// LikeablePersonService.java에
+// findById를 만들어 삭제할 호감대상을 가져올 수 있게 한다  
 public LikeablePerson findById(long id) {
     return likeablePersonRepository.findById(id).orElse(null);
 }
-```
 
+// LikeablePersonController.java
+// 소유자가 아니라면
+if (likeablePerson.getFromInstaMember() != rq.getMember().getInstaMember()) {
+    return rq.redirectWithMsg("/likeablePerson/list", "소유자가 아닙니다");
+}
+```
+likeablePerson.getFromInstaMember()과 rq.getMember().getInstaMember()를 비교해서
+두 값이 다르면 소유자가 아니므로 에러메시지를 쓰고 리턴시킨다
+
+- 없는 데이터 체크
+findById를 만들어 줄 때 값이 없으면 orElse(null)로 null 값을 반환해주었으니
+```java
+// 없는 데이터라면
+if (likeablePerson == null) {
+    return rq.redirectWithMsg("/likeablePerson/list", "유효하지 않는 데이터입니다");
+}
+```
+likeablePerson이 null값이라면 에러메시지를 주고 리턴시킨다
+
+- 호감상대 삭제
+```java
+// LikeablePersonController.java 에선 createRsData를 쓰고 Service에 삭제 요청을 한다
+RsData<LikeablePerson> createRsData = likeablePersonService.delete(likeablePerson);
+// LikeablePersonService.java
+// Transactional은 select SQL이 아니므로 꼭 붙여주어야 한다
+@Transactional
+public RsData<LikeablePerson> delete(LikeablePerson likeablePerson) {
+    likeablePersonRepository.delete(likeablePerson);
+
+    return RsData.of("S-1", "삭제되었습니다");
+}
+```
+@Transactional은 delete가 select SQL이 아니기 때문에 꼭 붙여주어야 한다
+Repository에 삭제요청을 하고 성공 메시지를 반환해준다
 
 **[특이사항]**
 
