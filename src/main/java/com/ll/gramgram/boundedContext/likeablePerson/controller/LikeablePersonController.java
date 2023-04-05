@@ -60,4 +60,16 @@ public class LikeablePersonController {
 
         return "usr/likeablePerson/list";
     }
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable("id") long id) {
+        LikeablePerson likeablePerson = likeablePersonService.findById(id);
+
+        // 소유자가 아니라면
+        if (likeablePerson.getFromInstaMember() != rq.getMember().getInstaMember()) {
+            return rq.redirectWithMsg("/likeablePerson/list", "소유자가 아닙니다");
+        }
+
+        return "redirect:/likeablePerson/list";
+    }
 }
