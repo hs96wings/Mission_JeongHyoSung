@@ -99,6 +99,21 @@ assertThat(likeablePerson).isEqualTo(null);
 ```
 이 코드를 추가해 삭제가 잘 되었는지 테스트한다
 
+- 구글 로그인
+
+강사님의 92강 강의에서 구글 로그인에 관해서는 provider를 추가시키지 않아도 된다해서 추가시키지 않았지만 그래도 로그인이 잘 되지 않았다  
+검색을 하여
+```yaml
+clientId: 
+client-secret: 
+scope:
+  - email
+  - profile
+client-name: Google
+```
+이렇게만 추가해주면 로그인이 된다고 하여 시도해봤는데 로그인이 잘 되었다  
+추가로, clientId와 client-secret는 비밀로 해야 하기에 파일을 분리하고 .gitignore에 추가했다
+
 **[특이사항]**
 
 구현 과정에서 아쉬웠던 점 / 궁금했던 점을 정리합니다.
