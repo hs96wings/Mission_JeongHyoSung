@@ -19,6 +19,32 @@
 
 **[접근 방법]**
 
+- 일단 테스트 코드를 만들기 위해 WHEN은 t001에서, THEN은 t003에서 가져왔다
+```Java
+// WHEN
+// t001에서 가져온 코드를
+ResultActions resultActions = mvc
+        .perform(get("/likeablePerson/add"))
+        .andDo(print());
+// t006으로 바꿔주었다
+ResultActions resultActions = mvc
+        .perfome(get("/likeablePerson/delete/1"))
+        .andDo(print());
+
+// THEN
+// t003에서 가져온 코드를
+resultActions
+  .andExpect(handler().handlerType(LikeablePersonController.class))
+  .andExpect(handler().methodName("add"))
+  .andExpect(status().is3xxRedirection());
+// t006으로 바꿔주었다
+resultActions
+  .andExpect(handler().handlerType(LikeablePersonController.class))
+  .andExpect(handler().methodName("delete"))
+  .andExpect(status().is3xxRedirection());
+```
+삭제하고 다시 목록으로 돌아가야하므로 3xxRedirection를 사용했다
+
 체크리스트를 중심으로 각각의 기능을 구현하기 위해 어떤 생각을 했는지 정리합니다.
 
 - 무엇에 중점을 두고 구현하였는지, 어떤 공식문서나 예제를 참고하여 개발하였는지 뿐만 아니라 미션을 진행하기 전 개인적으로 실습한 것도 포함하여 작성해주시기 바랍니다.
