@@ -52,4 +52,11 @@ public class LikeablePersonService {
     public LikeablePerson findById(long id) {
         return likeablePersonRepository.findById(id).orElse(null);
     }
+
+    @Transactional // delete이므로 붙여줘야 한다
+    public RsData<LikeablePerson> delete(LikeablePerson likeablePerson) {
+        likeablePersonRepository.delete(likeablePerson);
+
+        return RsData.of("S-1", "삭제되었습니다");
+    }
 }

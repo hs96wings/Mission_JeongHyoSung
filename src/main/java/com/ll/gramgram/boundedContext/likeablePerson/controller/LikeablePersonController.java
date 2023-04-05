@@ -75,6 +75,8 @@ public class LikeablePersonController {
             return rq.redirectWithMsg("/likeablePerson/list", "소유자가 아닙니다");
         }
 
-        return "redirect:/likeablePerson/list";
+        RsData<LikeablePerson> createRsData = likeablePersonService.delete(likeablePerson);
+
+        return rq.redirectWithMsg("/likeablePerson/list", createRsData);
     }
 }
