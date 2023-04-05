@@ -7,6 +7,7 @@
 ---
 
 - [ ] 호감상대 삭제
+  - [x] 등록되지 않은 호감상대는 삭제할 수 없다 
   - [ ] 삭제버튼을 누르면 호감 상대가 삭제되어야 한다
   - [x] 삭제하기 전 소유권이 본인에게 있는지 체크
   - [ ] 삭제 후 다시 호감목록 페이지로 돌아온다
@@ -19,7 +20,7 @@
 
 **[접근 방법]**
 
-- 일단 테스트 코드를 만들기 위해 WHEN은 t001에서, THEN은 t003에서 가져왔다
+- 테스트 코드를 만들기 위해 WHEN은 t001에서, THEN은 t003에서 가져왔다
 ```Java
 // WHEN
 // t001에서 가져온 코드를
@@ -44,6 +45,14 @@ resultActions
   .andExpect(status().is3xxRedirection());
 ```
 삭제하고 다시 목록으로 돌아가야하므로 3xxRedirection를 사용했다
+
+- 소유자 체크
+```java
+// LikeablePersonService.java에 findById를 만들어  
+public LikeablePerson findById(long id) {
+    return likeablePersonRepository.findById(id).orElse(null);
+}
+```
 
 
 **[특이사항]**
