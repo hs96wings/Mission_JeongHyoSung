@@ -90,7 +90,7 @@ public RsData<LikeablePerson> delete(LikeablePerson likeablePerson) {
     return RsData.of("S-1", "삭제되었습니다");
 }
 ```
-@Transactional은 delete가 select SQL이 아니기 때문에 꼭 붙여주어야 한다
+Transactional은 delete가 select SQL이 아니기 때문에 꼭 붙여주어야 한다
 Repository에 삭제요청을 하고 성공 메시지를 반환해준다
 
 - 테스트 코드 보충
@@ -149,4 +149,7 @@ client-name: Google
           authorization-grant-type: authorization_code
           redirect-uri: http://localhost:8080/login/oauth2/code/naver
       ```
-      - 2차 리팩토링은 피어리뷰를 통해 전달받은 다양한 의견과 피드백을 조율하여 진행합니다.
+    - 2차 리팩토링은 피어리뷰를 통해 전달받은 다양한 의견과 피드백을 조율하여 진행합니다.
+      - 없는 데이터와 소유자가 아닌 경우의 처리를 Service로 이전하였다
+      - 본인의 인스타그램 아이디를 입력하지 않았다면 delete에 접근하지 못하게 했다
+      - 삭제할 객체가 null이 아닐 때, 소유자가 맞을 때를 제외하고는 전부 삭제할 수 없게 수정하였다
