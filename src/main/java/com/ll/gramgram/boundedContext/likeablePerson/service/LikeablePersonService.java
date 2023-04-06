@@ -48,4 +48,23 @@ public class LikeablePersonService {
     public List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId) {
         return likeablePersonRepository.findByFromInstaMemberId(fromInstaMemberId);
     }
+
+    public LikeablePerson findById(long id) {
+        return likeablePersonRepository.findById(id).orElse(null);
+    }
+
+    @Transactional // delete이므로 붙여줘야 한다
+    public RsData<LikeablePerson> delete(Member member, LikeablePerson likeablePerson) {
+
+        if ( member.hasConnectedInstaMember() == false ) {
+            return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
+        }
+
+        if (likeablePerson != null && likeablePerson.getFromInstaMember() == member.getInstaMember()) {
+            likeablePersonRepository.delete(likeablePerson);
+            return RsData.of("S-1", "호감상대인 유저(%s)를 삭제했습니다".formatted(likeablePerson.getToInstaMemberUsername()));
+        }
+
+        return RsData.of("F-1", "호감상대를 삭제할 수 없습니다");
+    }
 }
