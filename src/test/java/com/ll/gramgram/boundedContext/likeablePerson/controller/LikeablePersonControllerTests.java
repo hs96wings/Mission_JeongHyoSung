@@ -1,6 +1,7 @@
 package com.ll.gramgram.boundedContext.likeablePerson.controller;
 
 
+import com.ll.gramgram.boundedContext.instaMember.controller.InstaMemberController;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
 import org.junit.jupiter.api.DisplayName;
@@ -157,7 +158,7 @@ public class LikeablePersonControllerTests {
     }
 
     @Test
-    @DisplayName("호감상대 삭제 처리")
+    @DisplayName("호감삭제")
     @WithUserDetails("user3")
     void t006() throws Exception {
         // WHEN
@@ -167,9 +168,10 @@ public class LikeablePersonControllerTests {
 
         // THEN
         resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().handlerType(InstaMemberController.class))
                 .andExpect(handler().methodName("delete"))
-                .andExpect(status().is3xxRedirection());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/likeablePerson/list**"));
 
         LikeablePerson likeablePerson = likeablePersonService.findById(1L);
         assertThat(likeablePerson).isEqualTo(null);
