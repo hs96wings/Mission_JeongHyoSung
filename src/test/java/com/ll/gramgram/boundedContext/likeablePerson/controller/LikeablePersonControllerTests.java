@@ -163,12 +163,12 @@ public class LikeablePersonControllerTests {
     void t006() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
-                .perform(get("/likeablePerson/delete/1"))
+                .perform(post("/likeablePerson/delete/1").with(csrf()))
                 .andDo(print());
 
         // THEN
         resultActions
-                .andExpect(handler().handlerType(InstaMemberController.class))
+                .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/likeablePerson/list**"));
