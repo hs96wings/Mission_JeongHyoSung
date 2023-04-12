@@ -29,20 +29,23 @@ public class LikeablePersonService {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
         }
 
-        for (LikeablePerson fromLikeablePerson : member.getInstaMember().getFromLikeablePeople()) {
-            String toInstaMemberUsername = fromLikeablePerson.getToInstaMember().getUsername();
+        LikeablePerson oldLikeablePerson = member.getInstaMember()
+                .getFromLikeablePeople()
+                .stream()
+                .filter(lp -> lp.getToInstaMember().getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
 
-            if (username.equals(toInstaMemberUsername)) {
-                if (attractiveTypeCode == fromLikeablePerson.getAttractiveTypeCode())
-                    return RsData.of("F-3", "%s는 이미 등록한 아이디입니다".formatted(username));
-                else {
-                    LikeablePerson likeablePerson = fromLikeablePerson
-                            .toBuilder()
-                            .attractiveTypeCode(attractiveTypeCode)
-                            .build();
-                    likeablePersonRepository.save(likeablePerson);
-                    return RsData.of("S-2", "입력하신 인스타유저(%s)의 호감 사유를 변경했습니다".formatted(username));
-                }
+        if (oldLikeablePerson != null) {
+            if (attractiveTypeCode ==oldLikeablePerson.getAttractiveTypeCode()) {
+                return RsData.of("F-3", "인스타유저(%s)는 이미 등록한 아이디입니다".formatted(username));
+            } else {
+                LikeablePerson likeablePerson = oldLikeablePerson
+                        .toBuilder()
+                        .attractiveTypeCode(attractiveTypeCode)
+                        .build();
+                likeablePersonRepository.save(likeablePerson);
+                return RsData.of("S-2", "입력하신 인스타유저(%s)의 호감 사유를 변경했습니다".formatted(username));
             }
         }
 
