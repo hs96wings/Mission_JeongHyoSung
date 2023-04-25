@@ -29,6 +29,30 @@ public class LikeablePersonService {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
         }
 
+        LikeablePerson oldLikeablePerson = member.getInstaMember()
+                .getFromLikeablePeople()
+                .stream()
+                .filter(lp -> lp.getToInstaMember().getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+
+        if (oldLikeablePerson != null) {
+            if (attractiveTypeCode ==oldLikeablePerson.getAttractiveTypeCode()) {
+                return RsData.of("F-3", "인스타유저(%s)는 이미 등록한 아이디입니다".formatted(username));
+            } else {
+                LikeablePerson likeablePerson = oldLikeablePerson
+                        .toBuilder()
+                        .attractiveTypeCode(attractiveTypeCode)
+                        .build();
+                likeablePersonRepository.save(likeablePerson);
+                return RsData.of("S-2", "입력하신 인스타유저(%s)의 호감 사유를 변경했습니다".formatted(username));
+            }
+        }
+
+        if (member.getInstaMember().getFromLikeablePeople().size() >= 10) {
+            return RsData.of("F-4", "호감상대는 10명 넘게 등록할 수 없습니다");
+        }
+
         InstaMember fromInstaMember = member.getInstaMember();
         InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
 
@@ -42,7 +66,6 @@ public class LikeablePersonService {
                 .build();
 
         likeablePersonRepository.save(likeablePerson); // 저장
-
         // 너가 좋아하는 호감표시 생겼어
         fromInstaMember.addFromLikeablePerson(likeablePerson);
 
