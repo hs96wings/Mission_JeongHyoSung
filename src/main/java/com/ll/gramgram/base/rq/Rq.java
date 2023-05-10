@@ -3,30 +3,43 @@ package com.ll.gramgram.base.rq;
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.member.service.MemberService;
+import com.ll.gramgram.boundedContext.notification.service.NotificationService;
 import com.ll.gramgram.standard.util.Ut;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 @Component
 @RequestScope
 public class Rq {
     private final MemberService memberService;
+    private final NotificationService notificationService;
+    private final MessageSource messageSource;
+    private final LocaleResolver localeResolver;
+    private Locale locale;
     private final HttpServletRequest req;
     private final HttpServletResponse resp;
     private final HttpSession session;
     private final User user;
     private Member member = null; // 레이지 로딩, 처음부터 넣지 않고, 요청이 들어올 때 넣는다.
 
-    public Rq(MemberService memberService, HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
+    public Rq(MemberService memberService, NotificationService notificationService, MessageSource messageSource, LocaleResolver localeResolver, HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
         this.memberService = memberService;
+        this.notificationService = notificationService;
+        this.messageSource = messageSource;
+        this.localeResolver = localeResolver;
         this.req = req;
         this.resp = resp;
         this.session = session;
@@ -39,6 +52,21 @@ public class Rq {
         } else {
             this.user = null;
         }
+    }
+
+    public boolean isAdmin() {
+        if (isLogout()) return false;
+
+        return getMember().isAdmin();
+    }
+
+    public boolean isRefererAdminPage() {
+        SavedRequest savedRequest = (SavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+
+        if (savedRequest == null) return false;
+
+        String referer = savedRequest.getRedirectUrl();
+        return referer != null && referer.contains("/adm");
     }
 
     // 로그인 되어 있는지 체크
@@ -69,7 +97,7 @@ public class Rq {
         String key = "historyBackErrorMsg___" + referer;
         req.setAttribute("localStorageKeyAboutHistoryBackErrorMsg", key);
         req.setAttribute("historyBackErrorMsg", msg);
-        // 200이 아니라 400으로 응답
+        // 200 이 아니라 400 으로 응답코드가 지정되도록
         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return "common/js";
     }
@@ -97,5 +125,48 @@ public class Rq {
     // 메세지에 ttl 적용
     private String msgWithTtl(String msg) {
         return Ut.url.encode(msg) + ";ttl=" + new Date().getTime();
+    }
+
+    public void setSessionAttr(String name, String value) {
+        session.setAttribute(name, value);
+    }
+
+    public <T> T getSessionAttr(String name, T defaultValue) {
+        try {
+            return (T) session.getAttribute(name);
+        } catch (Exception ignored) {
+        }
+
+        return defaultValue;
+    }
+
+    public void removeSessionAttr(String name) {
+        session.removeAttribute(name);
+    }
+
+    public boolean hasUnreadNotifications() {
+        if (isLogout()) return false;
+
+        Member actor = getMember();
+
+        if (!actor.hasConnectedInstaMember()) return false;
+
+        return notificationService.countUnreadNotificationsByToInstaMember(getMember().getInstaMember());
+    }
+
+    public String getCText(String code, String... args) {
+        return messageSource.getMessage(code, args, getLocale());
+    }
+
+    private Locale getLocale() {
+        if (locale == null) locale = localeResolver.resolveLocale(req);
+
+        return locale;
+    }
+
+    public String getParamsJsonStr() {
+        Map<String, String[]> parameterMap = req.getParameterMap();
+
+        return Ut.json.toStr(parameterMap);
     }
 }
