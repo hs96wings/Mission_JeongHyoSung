@@ -84,7 +84,7 @@ public class LikeablePersonService {
     }
 
     @Transactional // delete이므로 붙여줘야 한다
-    public RsData<LikeablePerson> delete(Member member, LikeablePerson likeablePerson) {
+    public RsData<LikeablePerson> cancel(Member member, LikeablePerson likeablePerson) {
 
         if ( member.hasConnectedInstaMember() == false ) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");

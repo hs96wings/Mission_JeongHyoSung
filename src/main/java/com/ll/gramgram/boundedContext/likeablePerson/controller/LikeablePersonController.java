@@ -67,12 +67,12 @@ public class LikeablePersonController {
     public String cancel(@PathVariable("id") Long id) {
         LikeablePerson likeablePerson = likeablePersonService.findById(id);
 
-        RsData<LikeablePerson> deleteRsData = likeablePersonService.delete(rq.getMember(), likeablePerson);
+        RsData<LikeablePerson> cancelRsData = likeablePersonService.cancel(rq.getMember(), likeablePerson);
 
-        if (deleteRsData.isFail()) {
-            return rq.historyBack(deleteRsData);
+        if (cancelRsData.isFail()) {
+            return rq.historyBack(cancelRsData);
         }
 
-        return rq.redirectWithMsg("/likeablePerson/list", deleteRsData);
+        return rq.redirectWithMsg("/likeablePerson/list", cancelRsData);
     }
 }
