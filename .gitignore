@@ -34,5 +34,8 @@ out/
 /nbdist/
 /.nb-gradle/
 
+### Custom ###
+application-secret.yml
+
 ### VS Code ###
 .vscode/
